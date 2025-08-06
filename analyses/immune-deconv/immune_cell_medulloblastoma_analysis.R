@@ -16,6 +16,9 @@
 #  comparing celltype fraction enrichment for group3 vs every other type. I used quantiseq, which provides 
 # absolute fraction as opposed to an arbitrary enrichment score.  Caveat: not able to characterize as many celltypes 
 # which are lost as "uncharacterized" with less sensitivity, which may impact analysis.
+#
+# Edit: adding back complete profile of celltype per subtype for global trends.  Monoycte and cd8 increase
+# driving the overall increase in immune cells in group3. Myeloid most in WNT.
 # 
 # Output files:
 # distsributions_total.png - distribution per celltype per subtype
@@ -50,7 +53,7 @@ deconv_xcell_df <- readRDS("results/xcell_output.rds")
 deconv_quantiseq_output_df <- readRDS("results/quantiseq_output.rds")
 deconv_quantiseq_output_df <- deconv_quantiseq_output_df[deconv_quantiseq_output_df$cancer_group == "Medulloblastoma",]
 
-histologies <- read_excel("/home/rstudio/project/data/SuppTable1-Histologies.xlsx",sheet = "histologies_file")
+#histologies <- read_excel("/home/rstudio/project/data/SuppTable1-Histologies.xlsx",sheet = "histologies_file")
 #deconv_quantiseq_output_df <- left_join(deconv_quantiseq_output_df, histologies, by = "Kids_First_Biospecimen_ID")
 #deconv_quantiseq_output_df <- left_join(deconv_quantiseq_output_df, deconv_xcell_df, by = "Kids_First_Biospecimen_ID")
 
