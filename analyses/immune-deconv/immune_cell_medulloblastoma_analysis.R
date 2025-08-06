@@ -72,7 +72,7 @@ evolve %>% pivot_wider(
 
 plot <- ggplot(evolve, aes(x = molecular_subtype, y = fraction, fill = cell_type)) +
   geom_boxplot() +
-  labs(title = "Immune Cell Fraction for Medulloblastoma Subtypes", y = "Fraction", x = "Subtype", fill = "Cell Type") +
+  labs(title = "Immune cell proportion per subtype", y = "fraction", x = "subtype", fill = "Cell Type") +
   theme_minimal() +
   theme(axis.text.x = element_text(angle = 0))
 
