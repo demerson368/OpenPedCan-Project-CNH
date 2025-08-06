@@ -60,6 +60,8 @@ deconv_quantiseq_output_df <- deconv_quantiseq_output_df[deconv_quantiseq_output
 #remove uncharacterized celltype fraction
 deconv_quantiseq_output_df <- deconv_quantiseq_output_df[deconv_quantiseq_output_df$cell_type != "uncharacterized cell",]
 
+
+#---- complete distribution ----
 evolve <- deconv_quantiseq_output_df[deconv_quantiseq_output_df$molecular_subtype %in% c("MB, WNT", "MB, SHH", "MB, Group3", "MB, Group4"),]
 evolve <- evolve[, c("Kids_First_Biospecimen_ID","molecular_subtype", "cell_type", "fraction")]
 
@@ -86,7 +88,7 @@ total_frac_immune_df <-  deconv_quantiseq_output_df  %>% group_by(Kids_First_Bio
 total_frac_immune_df <- unique(total_frac_immune_df)                             
 
 
-#filter for Medulloblastoma tumor and subtype
+# ---- filter Medulloblastoma tumor and subtype ----
 
 #went with total fraction sum since massive zero fraction for cell types distorts outcome of distribution
 # and corresponding medians.  Medians became close to zero as a result.
