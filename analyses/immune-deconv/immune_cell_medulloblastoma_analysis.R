@@ -18,6 +18,7 @@
 # which are lost as "uncharacterized" with less sensitivity, which may impact analysis.
 # 
 # Output files:
+# distsributions_total.png - distribution per celltype per subtype
 # distributions_immune_cell_subtype_medulloblastoma.png - pairwise distribution comparison total immune fraction
 # distributions_monocyte_cell_subtype_medulloblastoma.png - pairwise distribution comparison monocyte fraction
 # heatmap_immune_cell_subtype_medulloblastoma.png - heatmap of mann whitney u and ks pairwise for total immune 
@@ -35,24 +36,50 @@ library(dplyr)
 library(pheatmap)
 library(reshape2)
 library(cowplot)
+library(readxl)
+library(tidyr)
 
-setwd("./")
+setwd("./project/analyses/immune-deconv/")
 
 
 # ---- load and filter tumor file ----
 #extract xcell based deconvolution of celltypes
-#deconv_xcell_df <- readRDS("results/xcell_output.rds")
+deconv_xcell_df <- readRDS("results/xcell_output.rds")
 
 #extract quantiseq based deconvolution of celltypes
 deconv_quantiseq_output_df <- readRDS("results/quantiseq_output.rds")
 deconv_quantiseq_output_df <- deconv_quantiseq_output_df[deconv_quantiseq_output_df$cancer_group == "Medulloblastoma",]
 
+histologies <- read_excel("/home/rstudio/project/data/SuppTable1-Histologies.xlsx",sheet = "histologies_file")
+#deconv_quantiseq_output_df <- left_join(deconv_quantiseq_output_df, histologies, by = "Kids_First_Biospecimen_ID")
+#deconv_quantiseq_output_df <- left_join(deconv_quantiseq_output_df, deconv_xcell_df, by = "Kids_First_Biospecimen_ID")
+
 #remove uncharacterized celltype fraction
 deconv_quantiseq_output_df <- deconv_quantiseq_output_df[deconv_quantiseq_output_df$cell_type != "uncharacterized cell",]
 
+evolve <- deconv_quantiseq_output_df[deconv_quantiseq_output_df$molecular_subtype %in% c("MB, WNT", "MB, SHH", "MB, Group3", "MB, Group4"),]
+evolve <- evolve[, c("Kids_First_Biospecimen_ID","molecular_subtype", "cell_type", "fraction")]
+
+data_wide <- evolve %>%
+  pivot_wider(
+    names_from = cell_type,        
+    values_from = fraction,  
+  )
+
+plot <- ggplot(evolve, aes(x = molecular_subtype, y = fraction, fill = cell_type)) +
+  geom_boxplot() +
+  labs(title = "Immune Cell Fraction for Medulloblastoma Subtypes", y = "Fraction", x = "Subtype", fill = "Cell Type") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 0))
+
+ggsave("plots/distsributions_total.png", plot = plot, width = 8, height = 6)
+
+#it appears that monocytes and Tcell cd8 upregulation in group3 drives increased immune cell fraction.
+
+
 #create total fraction sum of immune cells per subtype per individual
 total_frac_immune_df <-  deconv_quantiseq_output_df  %>% group_by(Kids_First_Biospecimen_ID) %>%
-  reframe(fraction = sum(fraction), molecular_subtype = molecular_subtype,cancer_group = cancer_group)
+  reframe(fraction = sum(fraction), molecular_subtype = molecular_subtype.x,cancer_group = cancer_group.x)
 total_frac_immune_df <- unique(total_frac_immune_df)                             
 
 
@@ -62,7 +89,7 @@ total_frac_immune_df <- unique(total_frac_immune_df)
 # and corresponding medians.  Medians became close to zero as a result.
 
 MB_group4_df <- total_frac_immune_df[total_frac_immune_df$cancer_group == "Medulloblastoma" & 
-                                       total_frac_immune_df$molecular_subtype == "MB, Group4",]
+                                      total_frac_immune_df$molecular_subtype == "MB, Group4",]
 
 #alternative test with each type seprate in total distribution
 #MB_group4_df <- deconv_quantiseq_output_df[deconv_quantiseq_output_df$cancer_group == "Medulloblastoma" &
