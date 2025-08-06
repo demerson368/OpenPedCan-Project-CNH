@@ -21,7 +21,7 @@
 # driving the overall increase in immune cells in group3. Myeloid most in WNT.
 # 
 # Output files:
-# distsributions_total.png - distribution per celltype per subtype
+# distsributions_total.png - distribution per immune celltype per subtype
 # distributions_immune_cell_subtype_medulloblastoma.png - pairwise distribution comparison total immune fraction
 # distributions_monocyte_cell_subtype_medulloblastoma.png - pairwise distribution comparison monocyte fraction
 # heatmap_immune_cell_subtype_medulloblastoma.png - heatmap of mann whitney u and ks pairwise for total immune 
@@ -65,8 +65,7 @@ deconv_quantiseq_output_df <- deconv_quantiseq_output_df[deconv_quantiseq_output
 evolve <- deconv_quantiseq_output_df[deconv_quantiseq_output_df$molecular_subtype %in% c("MB, WNT", "MB, SHH", "MB, Group3", "MB, Group4"),]
 evolve <- evolve[, c("Kids_First_Biospecimen_ID","molecular_subtype", "cell_type", "fraction")]
 
-data_wide <- evolve %>%
-  pivot_wider(
+evolve %>% pivot_wider(
     names_from = cell_type,        
     values_from = fraction,  
   )
